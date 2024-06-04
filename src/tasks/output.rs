@@ -26,21 +26,22 @@ pub trait OutputTask<T>: DAQmxOutput<T> {
         timeout: Timeout,
         fill_mode: DataFillMode,
         samples_per_channel: Option<u32>,
-        buffer: &[T],
-    ) -> Result<i32> {
+        buffer: Vec<T>,
+    ) -> Result<i32>
+    where
+        T: Clone,
+    {
         let mut actual_samples_per_channel = 0;
         let requested_samples_per_channel = match samples_per_channel {
             Some(val) => val as i32,
             None => -1,
         };
 
-        println!("{} {}: {:?}", "🪚", "buffer addr", buffer.as_ptr());
-
         daqmx_call!(self.daqmx_write(
             requested_samples_per_channel,
             timeout.into(),
             fill_mode.into(),
-            buffer.as_ptr(),
+            buffer,
             &mut actual_samples_per_channel as *mut i32
         ))?;
 
@@ -55,7 +56,7 @@ pub trait DAQmxOutput<T> {
         samples_per_channel: i32,
         timeout: f64,
         fill_mode: bool32,
-        buffer: *const T,
+        buffer: Vec<T>,
         actual_samples_per_channel: *mut i32,
     ) -> i32;
 }
