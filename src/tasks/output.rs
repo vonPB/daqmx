@@ -34,6 +34,8 @@ pub trait OutputTask<T>: DAQmxOutput<T> {
             None => -1,
         };
 
+        println!("{} {}: {:?}", "🪚", "buffer addr", buffer.as_ptr());
+
         daqmx_call!(self.daqmx_write(
             requested_samples_per_channel,
             timeout.into(),

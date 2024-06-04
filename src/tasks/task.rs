@@ -44,6 +44,10 @@ impl<TYPE> Task<TYPE> {
         self.handle.0
     }
 
+    pub fn raw_handle_unsafe(&self) -> daqmx::TaskHandle {
+        self.handle.0
+    }
+
     /// Create a new task handle from a name. For use in specific task types.
     pub fn new(name: &str) -> Result<Self> {
         let c_name = CString::new(name)?;

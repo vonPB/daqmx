@@ -39,17 +39,39 @@ impl DAQmxOutput<u8> for Task<DigitalOutput> {
         buffer: *const u8,
         actual_samples_per_channel: *mut i32,
     ) -> i32 {
-        let autostart = daqmx::bool32::from(false); // TODO: investigate autostart
+        let autostart = daqmx::bool32::from(true); // TODO: investigate autostart
+
+        // daqmx::DAQmxWriteDigitalLines(
+        //     self.raw_handle(),
+        //     samples_per_channel,
+        //     autostart,
+        //     timeout,
+        //     fill_mode,
+        //     buffer,
+        //     actual_samples_per_channel,
+        //     ptr::null_mut(),
+        // )
+
+        let local = [
+            1u8, 0u8, 1u8, // Channel 0: 3 samples
+            1u8, 0u8, 1u8, // Channel 1: 3 samples
+            1u8, 0u8, 1u8, // Channel 2: 3 samples
+        ];
+        // let mut written = 0;
+        println!("{} {}: {:?}", "🪚", "local addr", local.as_ptr());
+        println!("{} {}: {:?}", "🪚", "in buffer", buffer);
 
         daqmx::DAQmxWriteDigitalLines(
             self.raw_handle(),
-            samples_per_channel,
+            3,
             autostart,
-            timeout,
-            fill_mode,
+            10.0,
+            // daqmx::daqmx::DAQmx_Val_GroupByChannel as u32,
+            crate::types::DataFillMode::GroupByChannel.into(),
+            // local.as_ptr(),
             buffer,
             actual_samples_per_channel,
-            ptr::null_mut(),
+            std::ptr::null_mut(),
         )
     }
 }
