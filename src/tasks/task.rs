@@ -33,6 +33,7 @@ pub struct DigitalOutput;
 pub struct Task<TYPE> {
     handle: Arc<TaskHandle>,
     channel_type: std::marker::PhantomData<TYPE>,
+    pub channel_count: u32,
 }
 impl<TYPE> Task<TYPE> {
     ///Get the sys crate handle for the task.
@@ -61,6 +62,7 @@ impl<TYPE> Task<TYPE> {
         Ok(Self {
             handle: Arc::new(TaskHandle(handle)),
             channel_type: PhantomData,
+            channel_count: 0,
         })
     }
 

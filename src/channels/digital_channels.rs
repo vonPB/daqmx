@@ -53,6 +53,15 @@ pub struct DigitalChannel {
 }
 
 impl DigitalChannel {
+    /// When calling this multiple times per task, make sure the port/line count is the same,
+    /// otherwise the sample_per_channel will result in accesing uninitalized memory
+    /// 
+    /// # Docs
+    /// Creates channel(s) to generate digital signals and adds the channel(s) to the task you specify with taskHandle.
+    /// You can group digital lines into one digital channel or separate them into multiple digital channels.
+    /// If you specify one or more entire ports in lines by using port physical channel names,
+    /// you cannot separate the ports into multiple channels.
+    /// To separate ports into multiple channels, use this function multiple times with a different port each time.
     pub fn new<S: Into<Vec<u8>>>(name: S, physical_channel: S) -> Result<DigitalChannelBuilder> {
         let physical_channel = CString::new(physical_channel)?;
         let mut builder = DigitalChannelBuilder::default();
