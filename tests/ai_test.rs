@@ -107,6 +107,37 @@ fn test_buffered_read() -> Result<()> {
 
 #[test]
 #[serial]
+fn test_buffered_read_with_timeout() -> Result<()> {
+    let mut task: Task<AnalogInput> = Task::new("scalar")?;
+    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
+    task.create_channel(ch1)?;
+    task.configure_sample_clock_timing(
+        None,
+        10.0,
+        ClockEdge::Rising,
+        SampleMode::FiniteSamples,
+        100,
+    )?;
+
+    let mut buffer = [0.0; 100];
+
+    task.start()?;
+    let error = task
+        .read(
+            Timeout::Seconds(1.0),
+            DataFillMode::GroupByChannel,
+            Some(100),
+            &mut buffer[..],
+        )
+        .is_err();
+
+    assert_eq!(error, true);
+
+    Ok(())
+}
+
+#[test]
+#[serial]
 fn test_stop() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;

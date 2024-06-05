@@ -1,4 +1,4 @@
-use crate::channels::{AnalogChannelBuilderTrait, AnalogChannelTrait};
+use crate::channels::{AnalogChannelBuilderTrait, AnalogChannelTrait, ChannelBuilderOutput};
 use crate::types::Timeout;
 use crate::{daqmx, daqmx_call};
 use anyhow::Result;
@@ -8,8 +8,11 @@ use super::output::{DAQmxOutput, OutputTask};
 use super::{task::AnalogOutput, Task};
 
 impl Task<AnalogOutput> {
-    pub fn create_channel<B: AnalogChannelBuilderTrait>(&mut self, builder: B) -> Result<()> {
-        builder.add_to_task(self.raw_handle())?;
+    pub fn create_channel<B: AnalogChannelBuilderTrait + ChannelBuilderOutput>(
+        &mut self,
+        builder: B,
+    ) -> Result<()> {
+        <B as ChannelBuilderOutput>::add_to_task(builder, self.raw_handle())?;
         self.channel_count += 1;
         Ok(())
     }
@@ -20,6 +23,7 @@ impl Task<AnalogOutput> {
 }
 
 impl OutputTask<f64> for Task<AnalogOutput> {
+    /// Autostart is always true for analog output tasks.
     fn write_scalar(&mut self, value: f64, timeout: Timeout) -> Result<()> {
         daqmx_call!(daqmx::DAQmxWriteAnalogScalarF64(
             self.raw_handle(),

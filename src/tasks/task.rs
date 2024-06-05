@@ -22,7 +22,7 @@ impl Drop for TaskHandle {
 pub struct AnalogInput;
 
 #[derive(Clone)]
-///Marker type for an analog input task.
+///Marker type for an analog output task.
 pub struct AnalogOutput;
 
 #[derive(Clone)]

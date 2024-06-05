@@ -1,4 +1,4 @@
-use crate::channels::{AnalogChannelBuilderTrait, AnalogChannelTrait};
+use crate::channels::{AnalogChannelBuilderTrait, AnalogChannelTrait, ChannelBuilderInput};
 use crate::types::Timeout;
 use crate::{daqmx, daqmx_call};
 use anyhow::Result;
@@ -8,8 +8,11 @@ use super::input::{DAQmxInput, InputTask};
 use super::{task::AnalogInput, Task};
 
 impl Task<AnalogInput> {
-    pub fn create_channel<B: AnalogChannelBuilderTrait>(&mut self, builder: B) -> Result<()> {
-        builder.add_to_task(self.raw_handle())?;
+    pub fn create_channel<B: AnalogChannelBuilderTrait + ChannelBuilderInput>(
+        &mut self,
+        builder: B,
+    ) -> Result<()> {
+        <B as ChannelBuilderInput>::add_to_task(builder, self.raw_handle())?;
         self.channel_count += 1;
         Ok(())
     }
