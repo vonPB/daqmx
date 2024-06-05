@@ -23,6 +23,10 @@ pub struct AnalogInput;
 
 #[derive(Clone)]
 ///Marker type for an analog input task.
+pub struct AnalogOutput;
+
+#[derive(Clone)]
+///Marker type for an analog input task.
 pub struct DigitalInput;
 
 #[derive(Clone)]
@@ -42,10 +46,6 @@ impl<TYPE> Task<TYPE> {
     /// You should not hold this raw handle yourself as you
     /// lose the memory safety given by the wrapped task.
     pub(crate) fn raw_handle(&self) -> daqmx::TaskHandle {
-        self.handle.0
-    }
-
-    pub fn raw_handle_unsafe(&self) -> daqmx::TaskHandle {
         self.handle.0
     }
 

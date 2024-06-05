@@ -1,7 +1,7 @@
-mod ai_channels;
+mod analog_channels;
 mod digital_channels;
 
-pub use ai_channels::*;
+pub use analog_channels::*;
 pub use digital_channels::*;
 
 use crate::daqmx::TaskHandle;

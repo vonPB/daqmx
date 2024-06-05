@@ -1,8 +1,5 @@
-use std::sync::Arc;
-
 use daqmx::channels::DigitalChannel;
 use daqmx::channels::DigitalChannelBase;
-use daqmx::error::handle_error;
 use daqmx::tasks::output::OutputTask;
 use daqmx::tasks::DigitalOutput;
 use daqmx::tasks::Task;
@@ -64,63 +61,4 @@ fn test_digital_output_builder() {
         // Stop the task
         task.stop().unwrap();
     }
-}
-
-#[test]
-#[serial]
-fn test_manual() -> anyhow::Result<()> {
-    for _ in 0..100 {
-        let mut task: Task<DigitalOutput> = Task::new("").unwrap();
-
-        unsafe {
-            let port =
-                std::ffi::CString::new("PCIe-6363_test/port0/line0, PCIe-6363_test/port0/line1")
-                    .unwrap();
-
-            handle_error(daqmx::daqmx::DAQmxCreateDOChan(
-                task.raw_handle_unsafe(),
-                port.as_ptr(),
-                std::ptr::null(),
-                daqmx::daqmx::DAQmx_Val_ChanForAllLines,
-            ))?;
-        }
-
-        unsafe {
-            let port =
-                std::ffi::CString::new("PCIe-6363_test/port0/line2, PCIe-6363_test/port0/line3")
-                    .unwrap();
-
-            handle_error(daqmx::daqmx::DAQmxCreateDOChan(
-                task.raw_handle_unsafe(),
-                port.as_ptr(),
-                std::ptr::null(),
-                daqmx::daqmx::DAQmx_Val_ChanForAllLines,
-            ))?;
-        }
-
-        task.start().unwrap();
-
-        let buffer = [
-            1u8, 0u8, 1u8, // Channel 0: 3 samples
-            1u8, 0u8, 1u8, // Channel 1: 3 samples
-            1u8, 0u8, 1u8, // Channel 2: 3 samples
-            1u8, 0u8, 1u8, // Channel 3: 3 samples
-        ];
-
-        let mut written = 0;
-
-        handle_error(unsafe {
-            daqmx::daqmx::DAQmxWriteDigitalLines(
-                task.raw_handle_unsafe(),
-                3,
-                daqmx::daqmx::bool32::from(true),
-                10.0,
-                daqmx::daqmx::DAQmx_Val_GroupByChannel as u32,
-                buffer.as_ptr(),
-                &mut written,
-                std::ptr::null_mut(),
-            )
-        })?;
-    }
-    Ok(())
 }

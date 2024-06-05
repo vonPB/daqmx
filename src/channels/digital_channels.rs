@@ -53,9 +53,10 @@ pub struct DigitalChannel {
 }
 
 impl DigitalChannel {
+    /// # Note
     /// When calling this multiple times per task, make sure the port/line count is the same,
     /// otherwise the sample_per_channel will result in accesing uninitalized memory
-    /// 
+    ///
     /// # Docs
     /// Creates channel(s) to generate digital signals and adds the channel(s) to the task you specify with taskHandle.
     /// You can group digital lines into one digital channel or separate them into multiple digital channels.

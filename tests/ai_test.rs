@@ -1,3 +1,4 @@
+use anyhow::Result;
 use daqmx::tasks::AnalogInput;
 use serial_test::serial;
 use std::ffi::CString;
@@ -15,40 +16,35 @@ use daqmx::types::Timeout;
 
 #[test]
 #[serial]
-fn test_voltage_input_builder() {
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")
-        .unwrap()
+fn test_voltage_input_builder() -> Result<()> {
+    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
         .min(-1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
-        .build()
-        .unwrap();
+        .build()?;
 
-    let mut task: Task<AnalogInput> = Task::new("").unwrap();
-    task.create_channel(ch1).unwrap();
+    let mut task: Task<AnalogInput> = Task::new("")?;
+    task.create_channel(ch1)?;
 
-    let configured: VoltageInputChannel = task.get_channel("my name").unwrap();
+    let configured: VoltageChannelBase<AnalogInput> = task.get_channel("my name")?;
 
     assert_eq!(
-        configured.physical_channel().unwrap(),
+        configured.physical_channel()?,
         "PCIe-6363_test/ai1".to_owned()
     );
-    assert_eq!(configured.ai_max().unwrap(), 1.0);
-    assert_eq!(configured.ai_min().unwrap(), -1.0);
-    assert_eq!(
-        configured.ai_terminal_config().unwrap(),
-        AnalogTerminalConfig::RSE
-    );
-    assert_eq!(configured.scale().unwrap(), VoltageScale::Volts);
+    assert_eq!(configured.ai_max()?, 1.0);
+    assert_eq!(configured.ai_min()?, -1.0);
+    assert_eq!(configured.ai_terminal_config()?, AnalogTerminalConfig::RSE);
+    assert_eq!(configured.scale()?, VoltageScale::Volts);
 
-    task.start().unwrap();
+    task.start()?;
 
     const SAMPLES: usize = 10;
     let mut buffer = [0.0; SAMPLES];
 
-    let scalar = task.read_scalar(Timeout::Seconds(10.0)).unwrap();
+    let scalar = task.read_scalar(Timeout::Seconds(10.0))?;
     assert_ne!(scalar, 0.0);
-    task.stop().unwrap();
+    task.stop()?;
 
     task.configure_sample_clock_timing(
         None,
@@ -56,97 +52,86 @@ fn test_voltage_input_builder() {
         Rising,
         SampleMode::FiniteSamples,
         SAMPLES as u64,
-    )
-    .unwrap();
-    task.start().unwrap();
+    )?;
+    task.start()?;
 
     task.read(
         Timeout::Seconds(1.0),
         DataFillMode::GroupByChannel,
         None,
         &mut buffer,
-    )
-    .unwrap();
+    )?;
 
-    task.stop().unwrap();
+    task.stop()?;
+    Ok(())
 }
 
 #[test]
 #[serial]
-fn test_scalar_read() {
-    let mut task: Task<AnalogInput> = Task::new("scalar").unwrap();
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")
-        .unwrap()
-        .build()
-        .unwrap();
-    task.create_channel(ch1).unwrap();
-    let res = task.read_scalar(Timeout::Seconds(1.0)).unwrap();
+fn test_scalar_read() -> Result<()> {
+    let mut task: Task<AnalogInput> = Task::new("scalar")?;
+    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+    task.create_channel(ch1)?;
+    let res = task.read_scalar(Timeout::Seconds(1.0))?;
     assert_ne!(res, 0.0);
     drop(task);
+    Ok(())
 }
 
 #[test]
 #[serial]
-fn test_buffered_read() {
-    let mut task: Task<AnalogInput> = Task::new("scalar").unwrap();
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")
-        .unwrap()
-        .build()
-        .unwrap();
-    task.create_channel(ch1).unwrap();
+fn test_buffered_read() -> Result<()> {
+    let mut task: Task<AnalogInput> = Task::new("scalar")?;
+    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
+    task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
         1000.0,
         ClockEdge::Rising,
         SampleMode::FiniteSamples,
         100,
-    )
-    .unwrap();
+    )?;
 
     let mut buffer = [0.0; 100];
 
-    task.start().unwrap();
+    task.start()?;
     task.read(
         Timeout::Seconds(1.0),
         DataFillMode::GroupByChannel,
         Some(100),
         &mut buffer[..],
-    )
-    .unwrap();
+    )?;
+
+    Ok(())
 }
 
 #[test]
 #[serial]
-fn test_stop() {
-    let mut task: Task<AnalogInput> = Task::new("scalar").unwrap();
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")
-        .unwrap()
-        .build()
-        .unwrap();
-    task.create_channel(ch1).unwrap();
+fn test_stop() -> Result<()> {
+    let mut task: Task<AnalogInput> = Task::new("scalar")?;
+    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
+    task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
         1000.0,
         ClockEdge::Rising,
         SampleMode::FiniteSamples,
         100,
-    )
-    .unwrap();
+    )?;
 
     let mut buffer = [0.0; 100];
 
-    task.set_read_auto_start(false).unwrap();
-    task.start().unwrap();
+    task.set_read_auto_start(false)?;
+    task.start()?;
     task.read(
         Timeout::Seconds(1.0),
         DataFillMode::GroupByChannel,
         Some(100),
         &mut buffer[..],
-    )
-    .unwrap();
+    )?;
 
     //now stop and confirm read response.
-    task.stop().unwrap();
+    task.stop()?;
     let read_result = task.read(
         Timeout::Seconds(1.0),
         DataFillMode::GroupByChannel,
@@ -164,35 +149,34 @@ fn test_stop() {
     } else {
         panic!("Expected DaqmxError with code -200473");
     }
+    Ok(())
 }
 
 #[test]
 #[serial]
-fn test_voltage_input_builder_custom_scale() {
+fn test_voltage_input_builder_custom_scale() -> Result<()> {
     // create custom scale first.
-    let _scale = LinearScale::new("TestScale", 1.0, 1.5, PreScaledUnits::Volts, "test").unwrap();
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")
-        .unwrap()
+    let _scale = LinearScale::new("TestScale", 1.0, 1.5, PreScaledUnits::Volts, "test")?;
+    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
         .scale(VoltageScale::CustomScale(Some(
             CString::new("TestScale").expect("Name Error"),
         )))
         .max(5.0)
         .min(-4.0)
         .terminal_config(AnalogTerminalConfig::RSE)
-        .build()
-        .unwrap();
+        .build()?;
 
-    let mut task: Task<AnalogInput> = Task::new("custom scale").unwrap();
-    task.create_channel(ch1).unwrap();
+    let mut task: Task<AnalogInput> = Task::new("custom scale")?;
+    task.create_channel(ch1)?;
 
-    let configured: VoltageInputChannel = task.get_channel("my name").unwrap();
+    let configured: VoltageChannelBase<AnalogInput> = task.get_channel("my name")?;
 
     assert_eq!(
-        configured.scale().unwrap(),
+        configured.scale()?,
         VoltageScale::CustomScale(Some(CString::new("TestScale").expect("Name Error")))
     );
 
-    task.start().unwrap();
+    task.start()?;
 
     let mut buffer = [0.0; 10];
     task.read(
@@ -200,8 +184,8 @@ fn test_voltage_input_builder_custom_scale() {
         DataFillMode::GroupByChannel,
         Some(10),
         &mut buffer,
-    )
-    .unwrap();
+    )?;
 
     assert_ne!(buffer[0], 0.0);
+    Ok(())
 }

@@ -3,7 +3,9 @@
 use daqmx::channels::*;
 use daqmx::tasks::*;
 use daqmx::types::*;
+use serial_test::serial;
 
+#[serial]
 #[test]
 fn test_move_to_thread() {
     let mut task: Task<AnalogInput> = Task::new("scalar").unwrap();
@@ -38,6 +40,7 @@ fn test_move_to_thread() {
     join_handle.join().unwrap();
 }
 
+#[serial]
 #[test]
 /// This test will move the read to another thread but set stop from this thread.
 /// This is a fairly commmon case for multithreading a task.

@@ -6,11 +6,11 @@ use derive_builder::Builder;
 use crate::daqmx;
 use crate::daqmx::*;
 
-use super::{Channel, ChannelBuilderInput};
+use super::{Channel, ChannelBuilderInput, ChannelBuilderOutput};
 use crate::daqmx_call;
 use crate::error::DaqmxError;
 use crate::scales::PreScaledUnits;
-use crate::tasks::{AnalogInput, Task};
+use crate::tasks::{AnalogInput, AnalogOutput, Task};
 use anyhow::Result;
 
 macro_rules! delegate_ai_channel {
@@ -26,23 +26,28 @@ macro_rules! delegate_ai_channel {
     };
 }
 
-pub trait AnalogInputChannel: Sized {
-    fn new(task: Task<AnalogInput>, name: &str) -> Result<Self>;
+pub trait AnalogChannelType {}
+
+impl AnalogChannelType for AnalogInput {}
+impl AnalogChannelType for AnalogOutput {}
+
+pub trait AnalogChannelTrait<T: AnalogChannelType>: Sized {
+    fn new(task: Task<T>, name: &str) -> Result<Self>;
 }
 
-pub struct AnalogInputChannelBase {
-    task: Task<AnalogInput>,
+pub struct AnalogChannelBase<T: AnalogChannelType> {
+    task: Task<T>,
     name: CString,
 }
 
-impl AnalogInputChannel for AnalogInputChannelBase {
-    fn new(task: Task<AnalogInput>, name: &str) -> Result<Self> {
+impl<T: AnalogChannelType> AnalogChannelTrait<T> for AnalogChannelBase<T> {
+    fn new(task: Task<T>, name: &str) -> Result<Self> {
         let name = CString::new(name)?;
         Ok(Self { task, name })
     }
 }
 
-impl Channel for AnalogInputChannelBase {
+impl<T: AnalogChannelType> Channel for AnalogChannelBase<T> {
     fn raw_handle(&self) -> *mut std::os::raw::c_void {
         self.task.raw_handle()
     }
@@ -52,7 +57,8 @@ impl Channel for AnalogInputChannelBase {
     }
 }
 
-impl AnalogInputChannelBase {
+impl<T: AnalogChannelType> AnalogChannelBase<T> {
+    /// Not needed for [AnalogOutput] channels]
     pub fn physical_channel(&self) -> Result<String> {
         self.read_channel_property_string(daqmx::DAQmxGetPhysicalChanName)
     }
@@ -71,11 +77,11 @@ impl AnalogInputChannelBase {
     }
 }
 
-pub struct VoltageInputChannel {
-    ai_channel: AnalogInputChannelBase,
+pub struct VoltageChannelBase<T: AnalogChannelType> {
+    ai_channel: AnalogChannelBase<T>,
 }
 
-impl VoltageInputChannel {
+impl<T: AnalogChannelType> VoltageChannelBase<T> {
     delegate_ai_channel!();
     pub fn scale(&self) -> Result<VoltageScale> {
         let scale: VoltageScale = self
@@ -92,9 +98,9 @@ impl VoltageInputChannel {
     }
 }
 
-impl AnalogInputChannel for VoltageInputChannel {
-    fn new(task: Task<AnalogInput>, name: &str) -> Result<Self> {
-        let ai_channel = AnalogInputChannelBase::new(task, name)?;
+impl<T: AnalogChannelType> AnalogChannelTrait<T> for VoltageChannelBase<T> {
+    fn new(task: Task<T>, name: &str) -> Result<Self> {
+        let ai_channel = AnalogChannelBase::new(task, name)?;
         Ok(Self { ai_channel })
     }
 }
@@ -189,7 +195,7 @@ impl TryFrom<i32> for VoltageScale {
 }
 
 /// Marker trait for Analog Input channel builders so the task can adapt to the type.
-pub trait AnalogInputChannelBuilder: ChannelBuilderInput {}
+pub trait AnalogChannelBuilderTrait: ChannelBuilderInput {}
 
 #[derive(Builder, Debug, Clone)]
 #[builder(setter(into))]
@@ -232,4 +238,19 @@ impl ChannelBuilderInput for VoltageChannel {
     }
 }
 
-impl AnalogInputChannelBuilder for VoltageChannel {}
+impl ChannelBuilderOutput for VoltageChannel {
+    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+        let empty_string = CString::default();
+        daqmx_call!(daqmx::DAQmxCreateAOVoltageChan(
+            task,
+            self.physical_channel.as_ptr(),
+            self.name.as_ref().unwrap_or(&empty_string).as_ptr(),
+            self.min,
+            self.max,
+            self.scale.clone().into(),
+            CString::from(self.scale).as_ptr(),
+        ))
+    }
+}
+
+impl AnalogChannelBuilderTrait for VoltageChannel {}

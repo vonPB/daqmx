@@ -4,51 +4,52 @@ use crate::{daqmx, daqmx_call};
 use anyhow::Result;
 use std::ptr;
 
-use super::input::{DAQmxInput, InputTask};
-use super::{task::AnalogInput, Task};
+use super::output::{DAQmxOutput, OutputTask};
+use super::{task::AnalogOutput, Task};
 
-impl Task<AnalogInput> {
+impl Task<AnalogOutput> {
     pub fn create_channel<B: AnalogChannelBuilderTrait>(&mut self, builder: B) -> Result<()> {
         builder.add_to_task(self.raw_handle())?;
         self.channel_count += 1;
         Ok(())
     }
 
-    pub fn get_channel<C: AnalogChannelTrait<AnalogInput>>(&self, name: &str) -> Result<C> {
+    pub fn get_channel<C: AnalogChannelTrait<AnalogOutput>>(&self, name: &str) -> Result<C> {
         C::new(self.clone(), name)
     }
 }
 
-impl InputTask<f64> for Task<AnalogInput> {
-    fn read_scalar(&mut self, timeout: Timeout) -> Result<f64> {
-        let mut value = 0.0;
-        daqmx_call!(daqmx::DAQmxReadAnalogScalarF64(
+impl OutputTask<f64> for Task<AnalogOutput> {
+    fn write_scalar(&mut self, value: f64, timeout: Timeout) -> Result<()> {
+        daqmx_call!(daqmx::DAQmxWriteAnalogScalarF64(
             self.raw_handle(),
+            1,
             timeout.into(),
-            &mut value,
-            ptr::null_mut(),
+            value,
+            ptr::null_mut()
         ))?;
-        Ok(value)
+        Ok(())
     }
 }
 
-impl DAQmxInput<f64> for Task<AnalogInput> {
-    unsafe fn daqmx_read(
+impl DAQmxOutput<f64> for Task<AnalogOutput> {
+    unsafe fn daqmx_write(
         &mut self,
         samples_per_channel: i32,
         timeout: f64,
         fill_mode: daqmx::bool32,
-        buffer: *mut f64,
-        buffer_size: u32,
+        buffer: *const f64,
         actual_samples_per_channel: *mut i32,
     ) -> i32 {
-        daqmx::DAQmxReadAnalogF64(
+        let autostart = daqmx::bool32::from(true);
+
+        daqmx::DAQmxWriteAnalogF64(
             self.raw_handle(),
             samples_per_channel,
+            autostart,
             timeout,
             fill_mode,
             buffer,
-            buffer_size,
             actual_samples_per_channel,
             ptr::null_mut(),
         )

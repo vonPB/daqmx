@@ -1,4 +1,5 @@
 pub mod ai_task;
+pub mod ao_task;
 pub mod di_task;
 pub mod do_task;
 pub mod input;
