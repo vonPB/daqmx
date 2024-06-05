@@ -79,33 +79,6 @@ fn test_scalar_read() -> Result<()> {
 
 #[test]
 #[serial]
-fn test_buffered_read() -> Result<()> {
-    let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
-    task.create_channel(ch1)?;
-    task.configure_sample_clock_timing(
-        None,
-        1000.0,
-        ClockEdge::Rising,
-        SampleMode::FiniteSamples,
-        100,
-    )?;
-
-    let mut buffer = [0.0; 100];
-
-    task.start()?;
-    task.read(
-        Timeout::Seconds(1.0),
-        DataFillMode::GroupByChannel,
-        Some(100),
-        &mut buffer[..],
-    )?;
-
-    Ok(())
-}
-
-#[test]
-#[serial]
 fn test_buffered_read_with_timeout() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
@@ -131,6 +104,35 @@ fn test_buffered_read_with_timeout() -> Result<()> {
         .is_err();
 
     assert_eq!(error, true);
+
+    Ok(())
+}
+
+#[test]
+#[serial]
+fn test_buffered_read_2() -> Result<()> {
+    let mut task: Task<AnalogInput> = Task::new("scalar")?;
+    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0, PCIe-6363_test/ai1")?.build()?;
+    task.create_channel(ch1)?;
+    task.configure_sample_clock_timing(
+        None,
+        1000.0,
+        ClockEdge::Rising,
+        SampleMode::FiniteSamples,
+        10,
+    )?;
+
+    let mut buffer = [0.0; 22];
+
+    task.start()?;
+    task.read(
+        Timeout::Seconds(1.0),
+        DataFillMode::GroupByChannel,
+        Some(10),
+        &mut buffer[..],
+    )?;
+
+    assert_eq!(buffer.len(), 22);
 
     Ok(())
 }
