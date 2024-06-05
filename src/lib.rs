@@ -1,3 +1,5 @@
+//! Based on https://github.com/WiresmithTech/daqmx-rs
+//! All
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
@@ -12,6 +14,7 @@ pub mod error;
 pub mod scales;
 pub mod tasks;
 pub mod types;
+pub mod utils;
 
 #[macro_export]
 macro_rules! daqmx_call {
@@ -19,4 +22,3 @@ macro_rules! daqmx_call {
         $crate::error::handle_error(unsafe { $l })
     };
 }
-

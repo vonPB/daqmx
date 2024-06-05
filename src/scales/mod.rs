@@ -1,3 +1,5 @@
+//! https://github.com/WiresmithTech/daqmx-rs
+//!
 //! Implements custom scaling functions
 //!
 

@@ -38,8 +38,7 @@ fn test_ao_buffered() -> Result<()> {
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;
     task.create_channel(ch1)?;
 
-    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)
-        .unwrap();
+    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)?;
 
     task.start()?;
 
@@ -72,8 +71,7 @@ fn test_ao_buffered_multi_port() -> Result<()> {
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;
     task.create_channel(ch1)?;
 
-    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)
-        .unwrap();
+    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)?;
 
     task.start()?;
 
@@ -114,8 +112,7 @@ fn test_ao_buffered_multi_channel() -> Result<()> {
     task.create_channel(ch1)?;
     task.create_channel(ch2)?;
 
-    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)
-        .unwrap();
+    task.configure_sample_clock_timing(None, 1000.0, Rising, SampleMode::FiniteSamples, 10 as u64)?;
 
     task.start()?;
 

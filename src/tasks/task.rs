@@ -1,3 +1,5 @@
+//! https://github.com/WiresmithTech/daqmx-rs
+
 use crate::{daqmx, daqmx_call, types};
 use std::{ffi::CString, marker::PhantomData, ptr, sync::Arc};
 

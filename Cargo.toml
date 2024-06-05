@@ -1,6 +1,6 @@
 [package]
 name = "daqmx"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,12 +9,8 @@ edition = "2021"
 rand = "0.8"
 lazy_static = "1.4.0"
 log = "^0.4"
-log4rs = { version = "1.2.0", features = ["toml_format"] }
+log4rs = { version = "1.2.0" }
 serial_test = "3.0.0"
-serde = { version = "1.0.127", features = ["derive"] }
-tokio = { version = "1.35", features = ["macros"] }
-tokio-test = "0.4"
-specta = {version ="=2.0.0-rc.12", features = []}
 anyhow = "1.0.40"
 thiserror = "1.0"
 delegate = "0.12.0"
@@ -25,3 +21,15 @@ derive_builder = "0.20"
 
 [build-dependencies]
 bindgen = "0.69"
+
+[features]
+default = []
+serde_support = ["serde"]
+
+[dependencies.serde]
+version = "1.0"
+optional = true
+
+[dependencies.serde_derive]
+version = "1.0"
+optional = true

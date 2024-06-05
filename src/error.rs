@@ -1,4 +1,4 @@
-// https://github.com/WiresmithTech/daqmx-rs
+//! https://github.com/WiresmithTech/daqmx-rs
 
 use log::warn;
 /// Error handling types and functions.
