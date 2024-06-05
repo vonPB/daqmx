@@ -19,7 +19,6 @@ use daqmx::types::Timeout;
 fn test_voltage_input_builder() -> Result<()> {
     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
-        .min(-1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
 
@@ -193,7 +192,6 @@ fn test_voltage_input_builder_custom_scale() -> Result<()> {
             CString::new("TestScale").expect("Name Error"),
         )))
         .max(5.0)
-        .min(-4.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
 

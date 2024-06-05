@@ -15,7 +15,6 @@ use daqmx::types::Timeout;
 fn test_ao_scalar() -> Result<()> {
     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ao1")?
         .max(1.0)
-        .min(-1.0)
         .build()?;
 
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;
@@ -32,7 +31,6 @@ fn test_ao_scalar() -> Result<()> {
 fn test_ao_buffered() -> Result<()> {
     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ao1")?
         .max(1.0)
-        .min(-1.0)
         .build()?;
 
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;
@@ -65,7 +63,6 @@ fn test_ao_buffered() -> Result<()> {
 fn test_ao_buffered_multi_port() -> Result<()> {
     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ao0, PCIe-6363_test/ao1")?
         .max(1.0)
-        .min(-1.0)
         .build()?;
 
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;
@@ -100,12 +97,10 @@ fn test_ao_buffered_multi_port() -> Result<()> {
 fn test_ao_buffered_multi_channel() -> Result<()> {
     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ao0")?
         .max(1.0)
-        .min(-1.0)
         .build()?;
 
     let ch2 = VoltageChannel::new("my name2", "PCIe-6363_test/ao1")?
         .max(1.0)
-        .min(-1.0)
         .build()?;
 
     let mut task: Task<AnalogOutput> = Task::new("AnalogOutTest")?;

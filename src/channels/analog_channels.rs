@@ -204,8 +204,6 @@ pub struct VoltageChannel {
     name: Option<CString>,
     #[builder(default = "5.0")]
     pub max: f64,
-    #[builder(default = "-5.0")]
-    pub min: f64,
     #[builder(default = "VoltageScale::Volts")]
     pub scale: VoltageScale,
     #[builder(default = "AnalogTerminalConfig::Default")]
@@ -230,8 +228,8 @@ impl ChannelBuilderInput for VoltageChannel {
             self.physical_channel.as_ptr(),
             self.name.as_ref().unwrap_or(&empty_string).as_ptr(),
             self.terminal_config as i32,
-            self.min,
-            self.max,
+            -self.max, // Set min as -max
+            self.max,  // max value
             self.scale.clone().into(),
             CString::from(self.scale).as_ptr(),
         ))
@@ -245,12 +243,11 @@ impl ChannelBuilderOutput for VoltageChannel {
             task,
             self.physical_channel.as_ptr(),
             self.name.as_ref().unwrap_or(&empty_string).as_ptr(),
-            self.min,
-            self.max,
+            -self.max, // Set min as -max
+            self.max,  // max value
             self.scale.clone().into(),
             CString::from(self.scale).as_ptr(),
         ))
     }
 }
-
 impl AnalogChannelBuilderTrait for VoltageChannel {}
