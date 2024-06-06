@@ -2,7 +2,13 @@ use std::ffi::CString;
 
 use crate::daqmx_call;
 use anyhow::Result;
-
+/// # Purpose
+/// Immediately aborts all tasks associated with a device and returns the device to an initialized state.
+/// Aborting a task stops and releases any resources the task reserved.
+///
+/// This function does not wait for the device to reset before continuing execution.
+/// When resetting a chassis, attached modules are unavailable.
+/// If you attempt to reset an attached module during this time, you will receive an error.
 pub fn reset_device(device: &str) -> Result<()> {
     let c_device = CString::new(device)?;
     let d_ptr = c_device.as_ptr();
