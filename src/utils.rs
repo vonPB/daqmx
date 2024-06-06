@@ -1,6 +1,19 @@
+use std::ffi::CString;
+
+use crate::daqmx_call;
+use anyhow::Result;
+
+pub fn reset_device(device: &str) -> Result<()> {
+    let c_device = CString::new(device)?;
+    let d_ptr = c_device.as_ptr();
+
+    daqmx_call!(crate::daqmx::DAQmxResetDevice(d_ptr))?;
+
+    Ok(())
+}
+
 mod info {
     use anyhow::Result;
-    use serial_test::serial;
     use std::ffi::CString;
 
     use crate::{
@@ -63,7 +76,7 @@ mod info {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn test_get_channels() -> Result<()> {
         {
             let res = get_channels("PCIe-6363_test", ChannelType::AI, false)?;

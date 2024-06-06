@@ -16,6 +16,9 @@ pub mod tasks;
 pub mod types;
 pub mod utils;
 
+pub use tasks::Task;
+pub use utils::*;
+
 #[macro_export]
 macro_rules! daqmx_call {
     ($l:expr) => {
