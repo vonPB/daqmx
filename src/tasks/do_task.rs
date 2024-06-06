@@ -32,6 +32,19 @@ impl OutputTask<u8> for Task<DigitalOutput> {
     }
 }
 
+impl OutputTask<bool> for Task<DigitalOutput> {
+    fn write_scalar(&mut self, value: bool, timeout: Timeout) -> Result<()> {
+        daqmx_call!(daqmx::DAQmxWriteDigitalScalarU32(
+            self.raw_handle(),
+            1,
+            timeout.into(),
+            value.into(),
+            ptr::null_mut()
+        ))?;
+        Ok(())
+    }
+}
+
 impl DAQmxOutput<u8> for Task<DigitalOutput> {
     unsafe fn daqmx_write(
         &mut self,
@@ -50,6 +63,30 @@ impl DAQmxOutput<u8> for Task<DigitalOutput> {
             timeout,
             fill_mode,
             buffer,
+            actual_samples_per_channel,
+            ptr::null_mut(),
+        )
+    }
+}
+
+impl DAQmxOutput<bool> for Task<DigitalOutput> {
+    unsafe fn daqmx_write(
+        &mut self,
+        samples_per_channel: i32,
+        timeout: f64,
+        fill_mode: daqmx::bool32,
+        buffer: *const bool,
+        actual_samples_per_channel: *mut i32,
+    ) -> i32 {
+        let autostart = daqmx::bool32::from(true);
+
+        daqmx::DAQmxWriteDigitalLines(
+            self.raw_handle(),
+            samples_per_channel,
+            autostart,
+            timeout,
+            fill_mode,
+            buffer as *const u8, // check if this works
             actual_samples_per_channel,
             ptr::null_mut(),
         )

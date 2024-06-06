@@ -211,3 +211,44 @@ fn test_combined_tasks() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[serial]
+fn test_delayed_ai_read() -> Result<()> {
+    const SAMPLES: usize = 600;
+
+    let ai1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
+        .max(5.0)
+        .terminal_config(AnalogTerminalConfig::RSE)
+        .build()?;
+
+    let mut ai_task: Task<AnalogInput> = Task::new("")?;
+    ai_task.create_channel(ai1)?;
+
+    ai_task.configure_sample_clock_timing(
+        None,
+        1000.0,
+        Rising,
+        SampleMode::FiniteSamples,
+        SAMPLES as u64,
+    )?;
+
+    ai_task.start()?;
+
+    std::thread::sleep(std::time::Duration::from_millis(500));
+
+    let mut ai_buffer = [0.0; SAMPLES];
+    ai_task.read(
+        Timeout::Seconds(0.2),
+        DataFillMode::GroupByChannel,
+        None,
+        &mut ai_buffer,
+    )?;
+
+    assert_eq!(ai_buffer.len(), SAMPLES);
+    assert_ne!(ai_buffer[0], 0.0);
+    assert_ne!(ai_buffer[SAMPLES - 1], 0.0);
+
+    ai_task.stop()?;
+    Ok(())
+}

@@ -42,7 +42,7 @@ impl DAQmxInput<f64> for Task<AnalogInput> {
         samples_per_channel: i32,
         timeout: f64,
         fill_mode: daqmx::bool32,
-        buffer: *mut f64,
+        buffer: &mut [f64],
         buffer_size: u32,
         actual_samples_per_channel: *mut i32,
     ) -> i32 {
@@ -51,7 +51,7 @@ impl DAQmxInput<f64> for Task<AnalogInput> {
             samples_per_channel,
             timeout,
             fill_mode,
-            buffer,
+            buffer.as_mut_ptr(),
             buffer_size,
             actual_samples_per_channel,
             ptr::null_mut(),

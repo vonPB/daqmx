@@ -49,7 +49,7 @@ pub trait InputTask<T>: DAQmxInput<T> {
             requested_samples_per_channel,
             timeout.into(),
             fill_mode.into(),
-            buffer.as_mut_ptr(),
+            buffer,
             buffer_length,
             &mut actual_samples_per_channel as *mut i32
         ))?;
@@ -65,7 +65,7 @@ pub trait DAQmxInput<T> {
         samples_per_channel: i32,
         timeout: f64,
         fill_mode: bool32,
-        buffer: *mut T,
+        buffer: &mut [T],
         buffer_size: u32,
         actual_samples_per_channel: *mut i32,
     ) -> i32;
