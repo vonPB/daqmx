@@ -176,4 +176,13 @@ impl<TYPE> Task<TYPE> {
         daqmx_call!(daqmx::DAQmxSetReadAutoStart(self.raw_handle(), value))?;
         Ok(())
     }
+
+    pub fn configure_trigger(&mut self, source: &str, edge: types::ClockEdge) -> Result<()> {
+        let source_c = CString::new(source)?;
+        daqmx_call!(daqmx::DAQmxCfgDigEdgeStartTrig(
+            self.raw_handle(),
+            source_c.as_ptr(),
+            edge.into()
+        ))
+    }
 }

@@ -62,7 +62,7 @@ impl From<Timeout> for f64 {
     }
 }
 
-///Represents the active edge of clock.
+///Represents the active edge of clock or trigger
 ///
 /// Default is rising.
 pub enum ClockEdge {
