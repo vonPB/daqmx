@@ -18,7 +18,7 @@ pub fn reset_device(device: &str) -> Result<()> {
     Ok(())
 }
 
-mod info {
+pub mod info {
     use anyhow::Result;
     use std::ffi::CString;
 
@@ -100,6 +100,38 @@ mod info {
             let res = get_channels("PCIe-6363_test", ChannelType::DO, true)?;
             assert!(res.len() > 0);
         }
+        Ok(())
+    }
+
+    /// Query the system's device names and returns them as a vector of strings.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use daqmx::info::get_device_names;
+    /// use anyhow::Result;
+    ///
+    /// let res: Result<Vec<String>> = get_device_names();
+    /// assert!(res.is_ok());
+    ///
+    /// ```
+    pub fn get_device_names() -> Result<Vec<String>> {
+        let mut buf = vec![0i8; 2048];
+        let buf_ptr = buf.as_mut_ptr();
+
+        daqmx_call!(crate::daqmx::DAQmxGetSysDevNames(buf_ptr, 2048))?;
+
+        let buffer = buffer_to_string(buf);
+        let names: Vec<String> = buffer.split(", ").map(String::from).collect();
+
+        Ok(names)
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_get_device_list() -> Result<()> {
+        let res = get_device_names()?;
+        assert!(res.len() > 0);
         Ok(())
     }
 }
