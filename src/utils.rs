@@ -35,6 +35,7 @@ pub mod info {
         feature = "serde_support",
         derive(serde::Serialize, serde::Deserialize)
     )]
+    #[cfg_attr(feature = "specta_support", derive(specta::Type))]
     pub enum ChannelType {
         AI, // Analog Input
         AO, // Analog Output
