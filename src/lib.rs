@@ -1,5 +1,23 @@
-//! Based on https://github.com/WiresmithTech/daqmx-rs
-//! All
+//! Based on <https://github.com/WiresmithTech/daqmx-rs>
+//!
+//!
+//! # Examples
+//!
+//! ```rust
+//! use daqmx::channels::*;
+//! use daqmx::tasks::*;
+//!
+//! fn main() -> Result<()> {
+//!     let mut task: Task<AnalogInput> = Task::new("scalar")?;
+//!     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+//!     task.create_channel(ch1)?;
+//!
+//!     let res = task.read_scalar(Timeout::Seconds(1.0))?;
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
@@ -11,7 +29,6 @@ pub mod daqmx {
 
 pub mod channels;
 pub mod error;
-pub mod mock;
 pub mod scales;
 pub mod tasks;
 pub mod types;

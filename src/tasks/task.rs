@@ -1,4 +1,4 @@
-//! https://github.com/WiresmithTech/daqmx-rs
+//! <https://github.com/WiresmithTech/daqmx-rs>
 
 use crate::{daqmx, daqmx_call, types};
 use std::{ffi::CString, marker::PhantomData, ptr, sync::Arc};
@@ -107,7 +107,7 @@ impl<TYPE> Task<TYPE> {
     ///
     /// * If [`None`] is provided to source then the onboard clock is used.
     /// * For external sources, set `rate` to the maximum expected frequency.
-    /// * [`ClockEdge`] provides a default if you aren't concerned with the actual edge. This is the rising edge.
+    /// * [`crate::types::ClockEdge`] provides a default if you aren't concerned with the actual edge. This is the rising edge.
     /// * For a continuous acquisition, `samples per channel` is used to configure the internal buffer size.
     pub fn configure_sample_clock_timing(
         &mut self,

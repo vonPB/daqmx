@@ -1,4 +1,4 @@
-//! https://github.com/WiresmithTech/daqmx-rs
+//! <https://github.com/WiresmithTech/daqmx-rs>
 use crate::channels::{AnalogChannelBuilderTrait, AnalogChannelTrait, ChannelBuilderInput};
 use crate::types::Timeout;
 use crate::{daqmx, daqmx_call};
