@@ -17,7 +17,9 @@ pub mod tasks;
 pub mod types;
 pub mod utils;
 
-pub use tasks::Task;
+pub use channels::*;
+pub use tasks::*;
+pub use types::*;
 pub use utils::*;
 
 #[macro_export]
