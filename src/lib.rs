@@ -11,6 +11,7 @@ pub mod daqmx {
 
 pub mod channels;
 pub mod error;
+pub mod mock;
 pub mod scales;
 pub mod tasks;
 pub mod types;
