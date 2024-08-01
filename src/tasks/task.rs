@@ -160,6 +160,13 @@ impl<TYPE> Task<TYPE> {
         ))
     }
 
+    /// Check if task is done
+    pub fn is_done(&mut self) -> Result<bool> {
+        let mut done: bool32 = 0;
+        daqmx_call!(daqmx::DAQmxIsTaskDone(self.raw_handle(), &mut done))?;
+        Ok(done != 0)
+    }
+
     ///Gets whether DAQmx read automatically starts the task.
     pub fn read_auto_start(&mut self) -> Result<bool> {
         let mut value: bool32 = 0;
@@ -177,6 +184,7 @@ impl<TYPE> Task<TYPE> {
         Ok(())
     }
 
+    /// Configures the trigger source for the task.
     pub fn configure_trigger(&mut self, source: &str, edge: types::ClockEdge) -> Result<()> {
         let source_c = CString::new(source)?;
         daqmx_call!(daqmx::DAQmxCfgDigEdgeStartTrig(

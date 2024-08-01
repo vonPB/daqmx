@@ -62,6 +62,8 @@ fn test_control_from_thread() -> Result<()> {
     task.set_read_auto_start(false)?;
     task.start()?;
 
+    assert_eq!(task.is_done()?, false);
+
     let mut thread_task = task.clone();
 
     let join_handle_1 = std::thread::spawn(move || {
