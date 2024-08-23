@@ -87,19 +87,19 @@ pub mod info {
     fn test_get_channels() -> Result<()> {
         {
             let res = get_channels("PCIe-6363_test", ChannelType::AI, false)?;
-            assert!(res.len() > 0);
+            assert!(!res.is_empty());
         }
         {
             let res = get_channels("PCIe-6363_test", ChannelType::AO, false)?;
-            assert!(res.len() > 0);
+            assert!(!res.is_empty());
         }
         {
             let res = get_channels("PCIe-6363_test", ChannelType::DI, true)?;
-            assert!(res.len() > 0);
+            assert!(!res.is_empty());
         }
         {
             let res = get_channels("PCIe-6363_test", ChannelType::DO, true)?;
-            assert!(res.len() > 0);
+            assert!(!res.is_empty());
         }
         Ok(())
     }
@@ -132,7 +132,7 @@ pub mod info {
     #[serial_test::serial]
     fn test_get_device_list() -> Result<()> {
         let res = get_device_names()?;
-        assert!(res.len() > 0);
+        assert!(!res.is_empty());
         Ok(())
     }
 }

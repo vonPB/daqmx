@@ -17,7 +17,7 @@ use daqmx::types::Timeout;
 #[test]
 #[serial]
 fn test_voltage_input_builder() -> Result<()> {
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
+    let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
@@ -69,7 +69,7 @@ fn test_voltage_input_builder() -> Result<()> {
 #[serial]
 fn test_scalar_read() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+    let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
     let res = task.read_scalar(Timeout::Seconds(1.0))?;
     assert_ne!(res, 0.0);
@@ -81,7 +81,7 @@ fn test_scalar_read() -> Result<()> {
 #[serial]
 fn test_buffered_read_with_timeout() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
+    let ch1 = VoltageChannel::builder("my_name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
@@ -112,7 +112,8 @@ fn test_buffered_read_with_timeout() -> Result<()> {
 #[serial]
 fn test_buffered_read_2() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0, PCIe-6363_test/ai1")?.build()?;
+    let ch1 =
+        VoltageChannel::builder("my_name", "PCIe-6363_test/ai0, PCIe-6363_test/ai1")?.build()?;
     task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
@@ -141,7 +142,7 @@ fn test_buffered_read_2() -> Result<()> {
 #[serial]
 fn test_stop() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my_name", "PCIe-6363_test/ai0")?.build()?;
+    let ch1 = VoltageChannel::builder("my_name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
@@ -189,7 +190,7 @@ fn test_stop() -> Result<()> {
 fn test_voltage_input_builder_custom_scale() -> Result<()> {
     // create custom scale first.
     let _scale = LinearScale::new("TestScale", 1.0, 1.5, PreScaledUnits::Volts, "test")?;
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
+    let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .scale(VoltageScale::CustomScale(Some(
             CString::new("TestScale").expect("Name Error"),
         )))

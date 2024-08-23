@@ -106,10 +106,11 @@ impl<T: AnalogChannelType> AnalogChannelTrait<T> for VoltageChannelBase<T> {
 }
 
 #[repr(i32)]
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 /// Defines the input configuration for the analog input.
 pub enum AnalogTerminalConfig {
     /// Uses the [default for the type/hardware combination](https://www.ni.com/docs/en-US/bundle/ni-daqmx-device-considerations/page/defaulttermconfig.html).
+    #[default]
     Default = DAQmx_Val_Cfg_Default,
     /// Configures inputs for reference single ended (reference to AI GND)
     RSE = DAQmx_Val_RSE,
@@ -119,12 +120,6 @@ pub enum AnalogTerminalConfig {
     Differential = DAQmx_Val_Diff,
     /// Configures inputs for pseudo-differential mode
     PseudoDifferential = DAQmx_Val_PseudoDiff,
-}
-
-impl Default for AnalogTerminalConfig {
-    fn default() -> Self {
-        AnalogTerminalConfig::Default
-    }
 }
 
 impl TryFrom<i32> for AnalogTerminalConfig {
@@ -211,7 +206,10 @@ pub struct VoltageChannel {
 }
 
 impl VoltageChannel {
-    pub fn new<S: Into<Vec<u8>>>(name: S, physical_channel: S) -> Result<VoltageChannelBuilder> {
+    pub fn builder<S: Into<Vec<u8>>>(
+        name: S,
+        physical_channel: S,
+    ) -> Result<VoltageChannelBuilder> {
         let physical_channel = CString::new(physical_channel)?;
         let mut builder = VoltageChannelBuilder::default();
         builder.physical_channel(physical_channel);

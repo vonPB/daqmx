@@ -55,7 +55,7 @@ trait Channel {
 
         //pop the null off.
         buffer.pop();
-        return Ok(String::from_utf8(buffer)?);
+        Ok(String::from_utf8(buffer)?)
     }
 
     fn read_channel_property<T: Default + Copy>(

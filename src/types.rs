@@ -79,8 +79,8 @@ impl Default for ClockEdge {
 impl From<ClockEdge> for i32 {
     fn from(edge: ClockEdge) -> Self {
         match edge {
-            ClockEdge::Rising => daqmx::DAQmx_Val_Rising as i32,
-            ClockEdge::Falling => daqmx::DAQmx_Val_Falling as i32,
+            ClockEdge::Rising => daqmx::DAQmx_Val_Rising,
+            ClockEdge::Falling => daqmx::DAQmx_Val_Falling,
         }
     }
 }
@@ -99,9 +99,9 @@ pub enum SampleMode {
 impl From<SampleMode> for i32 {
     fn from(mode: SampleMode) -> Self {
         match mode {
-            SampleMode::FiniteSamples => daqmx::DAQmx_Val_FiniteSamps as i32,
-            SampleMode::ContinuousSamples => daqmx::DAQmx_Val_ContSamps as i32,
-            SampleMode::HardwareTimedSinglePoint => daqmx::DAQmx_Val_HWTimedSinglePoint as i32,
+            SampleMode::FiniteSamples => daqmx::DAQmx_Val_FiniteSamps,
+            SampleMode::ContinuousSamples => daqmx::DAQmx_Val_ContSamps,
+            SampleMode::HardwareTimedSinglePoint => daqmx::DAQmx_Val_HWTimedSinglePoint,
         }
     }
 }
@@ -141,26 +141,23 @@ mod tests {
 
     #[test]
     fn edge_conversion_tests() {
-        assert_eq!(i32::from(ClockEdge::Rising), daqmx::DAQmx_Val_Rising as i32);
-        assert_eq!(
-            i32::from(ClockEdge::Falling),
-            daqmx::DAQmx_Val_Falling as i32
-        );
+        assert_eq!(i32::from(ClockEdge::Rising), daqmx::DAQmx_Val_Rising);
+        assert_eq!(i32::from(ClockEdge::Falling), daqmx::DAQmx_Val_Falling);
     }
 
     #[test]
     fn sample_mode_conversion_tests() {
         assert_eq!(
             i32::from(SampleMode::FiniteSamples),
-            daqmx::DAQmx_Val_FiniteSamps as i32
+            daqmx::DAQmx_Val_FiniteSamps
         );
         assert_eq!(
             i32::from(SampleMode::ContinuousSamples),
-            daqmx::DAQmx_Val_ContSamps as i32
+            daqmx::DAQmx_Val_ContSamps
         );
         assert_eq!(
             i32::from(SampleMode::HardwareTimedSinglePoint),
-            daqmx::DAQmx_Val_HWTimedSinglePoint as i32
+            daqmx::DAQmx_Val_HWTimedSinglePoint
         );
     }
 }

@@ -10,7 +10,7 @@ use serial_test::serial;
 #[test]
 fn test_move_to_thread() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+    let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,
@@ -47,7 +47,7 @@ fn test_move_to_thread() -> Result<()> {
 /// This is a fairly commmon case for multithreading a task.
 fn test_control_from_thread() -> Result<()> {
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-    let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+    let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
     task.configure_sample_clock_timing(
         None,

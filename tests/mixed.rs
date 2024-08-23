@@ -17,7 +17,7 @@ use daqmx::types::Timeout;
 #[test]
 #[serial]
 fn test_ai_di() -> Result<()> {
-    let ai1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
+    let ai1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
@@ -33,7 +33,7 @@ fn test_ai_di() -> Result<()> {
         SAMPLES as u64,
     )?;
 
-    let di1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+    let di1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
     let mut di_task: Task<DigitalInput> = Task::new("DI")?;
     di_task.create_channel(di1)?;
 
@@ -82,7 +82,7 @@ fn test_combined_tasks() -> Result<()> {
     const SAMPLES: usize = 10;
 
     // Analog Input
-    let ai1 = VoltageChannel::new("AI1", "PCIe-6363_test/ai1")?
+    let ai1 = VoltageChannel::builder("AI1", "PCIe-6363_test/ai1")?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
@@ -99,7 +99,7 @@ fn test_combined_tasks() -> Result<()> {
     )?;
 
     // Analog Output
-    let ao1 = VoltageChannel::new("AO1", "PCIe-6363_test/ao1")?
+    let ao1 = VoltageChannel::builder("AO1", "PCIe-6363_test/ao1")?
         .max(1.0)
         .build()?;
 
@@ -115,7 +115,7 @@ fn test_combined_tasks() -> Result<()> {
     )?;
 
     // Digital Input
-    let di1 = DigitalChannel::new("DI1", "PCIe-6363_test/port0/line0")?.build()?;
+    let di1 = DigitalChannel::builder("DI1", "PCIe-6363_test/port0/line0")?.build()?;
     let mut di_task: Task<DigitalInput> = Task::new("DI Task")?;
     di_task.create_channel(di1)?;
 
@@ -128,7 +128,7 @@ fn test_combined_tasks() -> Result<()> {
     )?;
 
     // Digital Output
-    let do1 = DigitalChannel::new("DO1", "PCIe-6363_test/port0/line1")?.build()?;
+    let do1 = DigitalChannel::builder("DO1", "PCIe-6363_test/port0/line1")?.build()?;
     let mut do_task: Task<DigitalOutput> = Task::new("DO Task")?;
     do_task.create_channel(do1)?;
 
@@ -217,7 +217,7 @@ fn test_combined_tasks() -> Result<()> {
 fn test_delayed_ai_read() -> Result<()> {
     const SAMPLES: usize = 600;
 
-    let ai1 = VoltageChannel::new("my name", "PCIe-6363_test/ai1")?
+    let ai1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .max(5.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;

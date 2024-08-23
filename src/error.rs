@@ -53,7 +53,7 @@ pub fn handle_error(return_code: i32) -> AnyResult<()> {
 /// * Returns `true` if there is a size error.
 /// * Returns `false` if there is no error.
 pub fn string_property_size_error(return_code: i32) -> AnyResult<bool> {
-    const TRUNCATED_WARNING: i32 = daqmx::DAQmxWarningCAPIStringTruncatedToFitBuffer as i32;
+    const TRUNCATED_WARNING: i32 = daqmx::DAQmxWarningCAPIStringTruncatedToFitBuffer;
     match return_code {
         daqmx::DAQmxErrorBufferTooSmallForString | TRUNCATED_WARNING => {
             // Wrong size, go again.
@@ -72,15 +72,10 @@ mod test {
 
     #[test]
     fn test_string_property_size_error() {
-        assert_eq!(string_property_size_error(0).unwrap(), false);
-        assert_eq!(
-            string_property_size_error(daqmx::DAQmxErrorBufferTooSmallForString).unwrap(),
-            true
-        );
-        assert_eq!(
-            string_property_size_error(daqmx::DAQmxWarningCAPIStringTruncatedToFitBuffer as i32)
-                .unwrap(),
-            true
+        assert!(!string_property_size_error(0).unwrap());
+        assert!(string_property_size_error(daqmx::DAQmxErrorBufferTooSmallForString).unwrap());
+        assert!(
+            string_property_size_error(daqmx::DAQmxWarningCAPIStringTruncatedToFitBuffer).unwrap()
         );
 
         match string_property_size_error(-1000) {

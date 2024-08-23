@@ -12,7 +12,7 @@ use serial_test::serial;
 #[test]
 #[serial]
 fn test_digital_input_builder_scalar_types() -> Result<()> {
-    let ch1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+    let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
     let mut task: Task<DigitalInput> = Task::new("")?;
     task.create_channel(ch1)?;
@@ -27,9 +27,9 @@ fn test_digital_input_builder_scalar_types() -> Result<()> {
 #[test]
 #[serial]
 fn test_digital_input_builder() -> Result<()> {
-    let ch1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+    let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
-    let ch2 = DigitalChannel::new(
+    let ch2 = DigitalChannel::builder(
         "my_digital_input2",
         "PCIe-6363_test/port0/line1, PCIe-6363_test/port0/line2",
     )?
@@ -65,9 +65,9 @@ fn test_digital_input_builder() -> Result<()> {
 #[test]
 #[serial]
 fn test_digital_input_builder_bool() -> Result<()> {
-    let ch1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+    let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
-    let ch2 = DigitalChannel::new(
+    let ch2 = DigitalChannel::builder(
         "my_digital_input2",
         "PCIe-6363_test/port0/line1, PCIe-6363_test/port0/line2",
     )?

@@ -14,10 +14,11 @@ use serial_test::serial;
 #[serial]
 fn test_digital_output_builder() -> Result<()> {
     for _ in 0..100 {
-        let ch1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+        let ch1 =
+            DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
         let ch2 =
-            DigitalChannel::new("my_digital_input2", "PCIe-6363_test/port0/line1")?.build()?;
+            DigitalChannel::builder("my_digital_input2", "PCIe-6363_test/port0/line1")?.build()?;
 
         let mut task: Task<DigitalOutput> = Task::new("")?;
         task.create_channel(ch1)?;
@@ -60,10 +61,11 @@ fn test_digital_output_builder() -> Result<()> {
 #[serial]
 fn test_digital_output_builder_bool() -> Result<()> {
     for _ in 0..100 {
-        let ch1 = DigitalChannel::new("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
+        let ch1 =
+            DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
         let ch2 =
-            DigitalChannel::new("my_digital_input2", "PCIe-6363_test/port0/line1")?.build()?;
+            DigitalChannel::builder("my_digital_input2", "PCIe-6363_test/port0/line1")?.build()?;
 
         let mut task: Task<DigitalOutput> = Task::new("")?;
         task.create_channel(ch1)?;
