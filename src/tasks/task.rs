@@ -39,7 +39,7 @@ pub struct DigitalOutput;
 pub struct Task<TYPE> {
     handle: Arc<TaskHandle>,
     channel_type: std::marker::PhantomData<TYPE>,
-    pub channel_count: u32,
+    pub channel_count: usize,
 }
 impl<TYPE> Task<TYPE> {
     ///Get the sys crate handle for the task.
