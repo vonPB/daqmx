@@ -1,4 +1,5 @@
-//! <https://github.com/WiresmithTech/daqmx-rs>
+// This file contains code derived from the daqmx-rs project:
+// https://github.com/WiresmithTech/daqmx-rs
 
 use crate::{daqmx, daqmx_call, types};
 use std::{ffi::CString, marker::PhantomData, ptr, sync::Arc};
@@ -39,6 +40,7 @@ pub struct DigitalOutput;
 pub struct Task<TYPE> {
     handle: Arc<TaskHandle>,
     channel_type: std::marker::PhantomData<TYPE>,
+    /// Keep track of the number of channels created for this task.
     pub channel_count: usize,
 }
 impl<TYPE> Task<TYPE> {

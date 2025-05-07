@@ -1,8 +1,9 @@
+// This file contains code derived from the daqmx-rs project:
 // https://github.com/WiresmithTech/daqmx-rs
+
 use crate::daqmx;
 
 /// Module for handling FFI interface types and general DAQmx Types.
-
 /// The FFI exposes the char* interface as i8 and requires preallocation in a way
 /// that CString doesn't like for string outputs.
 ///

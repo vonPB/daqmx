@@ -119,5 +119,6 @@ fn test_control_from_thread() -> Result<()> {
     join_handle_2
         .join()
         .map_err(|_| anyhow::anyhow!("Thread 2 panicked"))?;
+
     Ok(())
 }

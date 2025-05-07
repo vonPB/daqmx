@@ -1,4 +1,5 @@
-//! <https://github.com/WiresmithTech/daqmx-rs>
+// This file contains code derived from the daqmx-rs project:
+// https://github.com/WiresmithTech/daqmx-rs
 //!
 //! Implements custom scaling functions
 //!

@@ -1,4 +1,5 @@
-//! Based on <https://github.com/WiresmithTech/daqmx-rs>
+// This file contains code derived from the daqmx-rs project:
+// https://github.com/WiresmithTech/daqmx-rs
 //!
 //!
 //! # Examples
@@ -6,13 +7,16 @@
 //! ```rust
 //! use daqmx::channels::*;
 //! use daqmx::tasks::*;
+//! use daqmx::types::Timeout;
+//! use anyhow::Result;
 //!
 //! fn main() -> Result<()> {
 //!     let mut task: Task<AnalogInput> = Task::new("scalar")?;
-//!     let ch1 = VoltageChannel::new("my name", "PCIe-6363_test/ai0")?.build()?;
+//!     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
 //!     task.create_channel(ch1)?;
 //!
 //!     let res = task.read_scalar(Timeout::Seconds(1.0))?;
+//!     assert_ne!(res, 0.0);
 //!
 //!     Ok(())
 //! }

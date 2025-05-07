@@ -1,1 +1,1 @@
-#include "./externals/include/NIDAQmx.h"
+#include <NIDAQmx.h>
