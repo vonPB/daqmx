@@ -79,7 +79,11 @@ impl DAQmxInput<bool> for Task<DigitalInput> {
         buffer_size: u32,
         actual_samples_per_channel: *mut i32,
     ) -> i32 {
-        let mut temp_buffer: Vec<u8> = buffer.iter().map(|&x| x as u8).collect();
+        // DAQmx wants u8 output; we convert to bool afterwards.
+        let mut temp_buffer = vec![0u8; buffer.len()];
+
+        let max_elems = temp_buffer.len().min(u32::MAX as usize) as u32;
+        let safe_size = buffer_size.min(max_elems);
 
         let res = daqmx::DAQmxReadDigitalLines(
             self.raw_handle(),
@@ -87,14 +91,17 @@ impl DAQmxInput<bool> for Task<DigitalInput> {
             timeout,
             fill_mode,
             temp_buffer.as_mut_ptr(),
-            buffer_size,
+            safe_size,
             actual_samples_per_channel,
             ptr::null_mut(),
             ptr::null_mut(),
         );
 
-        for (i, x) in buffer.iter_mut().enumerate() {
-            *x = temp_buffer[i] != 0;
+        if res >= 0 {
+            let n = safe_size as usize;
+            for i in 0..n {
+                buffer[i] = temp_buffer[i] != 0;
+            }
         }
 
         res

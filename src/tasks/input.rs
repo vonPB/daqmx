@@ -7,7 +7,7 @@ use daqmx::bool32;
 
 use crate::daqmx_call;
 use crate::types::{DataFillMode, Timeout};
-use anyhow::Result;
+use anyhow::{bail, Result};
 
 pub trait InputTask<T>: DAQmxInput<T> {
     /// Read a single value from the task with the given timeout.
@@ -41,6 +41,11 @@ pub trait InputTask<T>: DAQmxInput<T> {
             Some(val) => val as i32,
             None => -1,
         };
+
+        if buffer.is_empty() {
+            bail!("Read buffer is empty, nothing to read into.");
+        }
+
         // Just saturate the buffer size at u32 boundary.
         // If it is larger, this will still be memory safe.
         let buffer_length = buffer.len().try_into().unwrap_or(u32::MAX);
@@ -59,7 +64,28 @@ pub trait InputTask<T>: DAQmxInput<T> {
 }
 
 pub trait DAQmxInput<T> {
-    /// A basic wrapper for the daqmx read function so that implementers don't have to repeat common setup for input task.
+    /// Low-level wrapper around the underlying NI-DAQmx read call.
+    ///
+    /// This exists so implementers only need to provide the final FFI call, while
+    /// [`InputTask::read`] handles argument normalization and common setup.
+    ///
+    /// # Safety
+    /// Implementers must uphold the following:
+    ///
+    /// - `buffer` must be valid for writes for the duration of the call.
+    /// - `buffer_size` must be the number of elements available in `buffer` that the underlying
+    ///   DAQmx function is allowed to write into (not bytes). Typically this should be
+    ///   `buffer.len()` clamped to the DAQmx API's supported maximum.
+    /// - The implementation must not write more than `buffer_size` elements into `buffer`,
+    ///   and must not write past `buffer.len()` regardless of `buffer_size`.
+    /// - `actual_samples_per_channel` must be a valid, writable pointer to an `i32`.
+    /// - `self.raw_handle()` (or equivalent) must refer to a valid DAQmx task handle that remains
+    ///   valid for the duration of the call.
+    /// - The DAQmx function called by the implementation must interpret `T` exactly as the
+    ///   element type expected by the DAQmx API for that read (e.g. `f64` for `DAQmxReadAnalogF64`,
+    ///   `u8`/`i16` for certain digital reads, etc.).
+    ///
+    /// Violating any of these requirements may cause undefined behavior.
     unsafe fn daqmx_read(
         &mut self,
         samples_per_channel: i32,

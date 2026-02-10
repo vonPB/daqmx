@@ -40,17 +40,16 @@ impl DAQmxOutput<f64> for Task<AnalogOutput> {
     unsafe fn daqmx_write(
         &mut self,
         samples_per_channel: i32,
+        auto_start: daqmx::bool32,
         timeout: f64,
         fill_mode: daqmx::bool32,
         buffer: *const f64,
         actual_samples_per_channel: *mut i32,
     ) -> i32 {
-        let autostart = daqmx::bool32::from(true);
-
         daqmx::DAQmxWriteAnalogF64(
             self.raw_handle(),
             samples_per_channel,
-            autostart,
+            auto_start,
             timeout,
             fill_mode,
             buffer,

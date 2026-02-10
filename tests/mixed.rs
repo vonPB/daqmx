@@ -134,8 +134,6 @@ fn test_combined_tasks() -> Result<()> {
 
     // do_task.configure_sample_clock_timing(None, 500.0, Rising, SampleMode::ContinuousSamples, 0)?;
 
-    do_task.set_read_auto_start(false)?;
-
     // Start all tasks
     ai_task.start()?;
     ao_task.start()?;
