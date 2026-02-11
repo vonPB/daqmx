@@ -206,14 +206,14 @@ pub struct VoltageChannel {
 }
 
 impl VoltageChannel {
-    pub fn builder<S: Into<Vec<u8>>>(
-        name: S,
-        physical_channel: S,
+    pub fn builder<N: AsRef<str>, P: AsRef<str>>(
+        name: N,
+        physical_channel: P,
     ) -> Result<VoltageChannelBuilder> {
-        let physical_channel = CString::new(physical_channel)?;
+        let physical_channel = CString::new(physical_channel.as_ref())?;
         let mut builder = VoltageChannelBuilder::default();
         builder.physical_channel(physical_channel);
-        builder.name(CString::new(name.into())?);
+        builder.name(CString::new(name.as_ref())?);
         Ok(builder)
     }
 }
