@@ -1,6 +1,5 @@
 use anyhow::Result;
 use daqmx::channels::{CounterOutputPulseTimeChannel, DigitalChannel, VoltageChannel};
-use daqmx::info;
 use daqmx::tasks::output::{OutputTask, WriteOptions};
 use daqmx::tasks::{
     AnalogInput, CounterOutput, CounterOutputTask, DigitalInput, DigitalOutput, Task,
@@ -8,22 +7,12 @@ use daqmx::tasks::{
 use daqmx::types::{ClockEdge, DataFillMode, IdleState, SampleMode, Timeout};
 use serial_test::serial;
 
-fn test_device_or_skip() -> Result<Option<String>> {
-    let dev = "PCIe-6363_test".to_string();
-    let devices = info::get_device_names()?;
-
-    if devices.iter().any(|d| d == &dev) {
-        Ok(Some(dev))
-    } else {
-        eprintln!("Skipping test: required device '{}' not present", dev);
-        Ok(None)
-    }
-}
+mod common;
 
 #[test]
 #[serial]
 fn pfi_master_trigger_starts_ai_di_do() -> Result<()> {
-    let Some(dev) = test_device_or_skip()? else {
+    let Some(dev) = common::test_device_or_skip()? else {
         return Ok(());
     };
 
@@ -122,7 +111,7 @@ fn pfi_master_trigger_starts_ai_di_do() -> Result<()> {
 #[test]
 #[serial]
 fn sensor_edge_triggers_another_shutter_group() -> Result<()> {
-    let Some(dev) = test_device_or_skip()? else {
+    let Some(dev) = common::test_device_or_skip()? else {
         return Ok(());
     };
 

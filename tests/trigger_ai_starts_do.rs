@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::channels::{AnalogTerminalConfig, DigitalChannel, VoltageChannel};
 use daqmx::tasks::output::{OutputTask, WriteOptions};
@@ -8,6 +9,9 @@ use serial_test::serial;
 #[test]
 #[serial]
 fn test_ai_start_trigger_releases_do() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     const SAMPLES: u32 = 10;
     let dev = "PCIe-6363_test";
 

@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::tasks::AnalogInput;
 use serial_test::serial;
@@ -17,6 +18,9 @@ use daqmx::types::Timeout;
 #[test]
 #[serial]
 fn test_voltage_input_builder() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
@@ -68,6 +72,9 @@ fn test_voltage_input_builder() -> Result<()> {
 #[test]
 #[serial]
 fn test_scalar_read() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
@@ -80,6 +87,9 @@ fn test_scalar_read() -> Result<()> {
 #[test]
 #[serial]
 fn test_buffered_read_with_timeout() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::builder("my_name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
@@ -111,6 +121,9 @@ fn test_buffered_read_with_timeout() -> Result<()> {
 #[test]
 #[serial]
 fn test_buffered_read_2() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 =
         VoltageChannel::builder("my_name", "PCIe-6363_test/ai0, PCIe-6363_test/ai1")?.build()?;
@@ -141,6 +154,9 @@ fn test_buffered_read_2() -> Result<()> {
 #[test]
 #[serial]
 fn test_stop() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::builder("my_name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
@@ -188,6 +204,9 @@ fn test_stop() -> Result<()> {
 #[test]
 #[serial]
 fn test_voltage_input_builder_custom_scale() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     // create custom scale first.
     let _scale = LinearScale::new("TestScale", 1.0, 1.5, PreScaledUnits::Volts, "test")?;
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?

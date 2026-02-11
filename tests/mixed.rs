@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::tasks::output::OutputTask;
 use daqmx::tasks::AnalogInput;
@@ -17,6 +18,9 @@ use daqmx::types::Timeout;
 #[test]
 #[serial]
 fn test_ai_di() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ai1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
@@ -79,6 +83,9 @@ fn test_ai_di() -> Result<()> {
 #[test]
 #[serial]
 fn test_combined_tasks() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     const SAMPLES: usize = 10;
 
     // Analog Input
@@ -213,6 +220,9 @@ fn test_combined_tasks() -> Result<()> {
 #[test]
 #[serial]
 fn test_delayed_ai_read() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     const SAMPLES: usize = 600;
 
     let ai1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai1")?

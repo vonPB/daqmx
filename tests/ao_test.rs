@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::tasks::output::OutputTask;
 use daqmx::tasks::AnalogOutput;
@@ -13,6 +14,9 @@ use daqmx::types::Timeout;
 #[test]
 #[serial]
 fn test_ao_scalar() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ao1")?
         .max(1.0)
         .build()?;
@@ -29,6 +33,9 @@ fn test_ao_scalar() -> Result<()> {
 #[test]
 #[serial]
 fn test_ao_buffered() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ao1")?
         .max(1.0)
         .build()?;
@@ -61,6 +68,9 @@ fn test_ao_buffered() -> Result<()> {
 #[test]
 #[serial]
 fn test_ao_buffered_multi_port() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ao0, PCIe-6363_test/ao1")?
         .max(1.0)
         .build()?;
@@ -95,6 +105,9 @@ fn test_ao_buffered_multi_port() -> Result<()> {
 #[test]
 #[serial]
 fn test_ao_buffered_multi_channel() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ao0")?
         .max(1.0)
         .build()?;

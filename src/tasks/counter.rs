@@ -120,6 +120,10 @@ impl Task<CounterOutput> {
 }
 
 impl CounterOutputTask for Task<CounterOutput> {
+    /// Sets only the number of samples to acquire or generate without specifying timing.
+    /// Typically, you should use this function when the task does not require sample timing,
+    /// such as tasks that use counters for buffered frequency measurement, buffered period
+    /// measurement, or pulse train generation.
     fn configure_implicit_timing(
         &mut self,
         mode: SampleMode,
@@ -150,6 +154,9 @@ impl Task<CounterInput> {
 }
 
 impl CounterInputTask for Task<CounterInput> {
+    /// Reads a 32-bit integer sample from a counter task.
+    /// Use this function when the counter sample is returned unscaled,
+    /// such as for edge counting.
     fn read_count_scalar(&mut self, timeout: Timeout) -> Result<u32> {
         let mut value = 0u32;
         daqmx_call!(daqmx::DAQmxReadCounterScalarU32(
@@ -161,6 +168,9 @@ impl CounterInputTask for Task<CounterInput> {
         Ok(value)
     }
 
+    /// Reads a single floating-point sample from a counter task.
+    /// Use this function when the counter sample is scaled to a floating-point value,
+    /// such as for frequency and period measurement.
     fn read_period_scalar(&mut self, timeout: Timeout) -> Result<f64> {
         let mut value = 0.0f64;
         daqmx_call!(daqmx::DAQmxReadCounterScalarF64(

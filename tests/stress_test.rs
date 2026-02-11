@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::channels::*;
 use daqmx::tasks::*;
@@ -24,6 +25,9 @@ const PHYSICAL_CHANNEL: &str = "PCIe-6363_test/ai0";
 #[serial]
 #[test]
 fn test_extreme_concurrent_reads_and_stop() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     println!(
         "Starting test_extreme_concurrent_reads_and_stop with {} reader threads.",
         NUM_READER_THREADS
