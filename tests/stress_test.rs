@@ -3,7 +3,7 @@ use anyhow::Result;
 use daqmx::channels::*;
 use daqmx::tasks::*;
 use daqmx::types::*;
-use rand::Rng;
+use rand::RngExt;
 use serial_test::serial;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
