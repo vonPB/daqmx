@@ -77,7 +77,7 @@ impl DigitalChannel {
 
 /// Digital Input impl
 impl ChannelBuilderInput for DigitalChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateDIChan(
             task,
@@ -90,7 +90,7 @@ impl ChannelBuilderInput for DigitalChannel {
 
 /// Digital Output impl
 impl ChannelBuilderOutput for DigitalChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateDOChan(
             task,

@@ -9,7 +9,7 @@ use super::{task::DigitalInput, Task};
 
 impl Task<DigitalInput> {
     pub fn create_channel<B: ChannelBuilderInput>(&mut self, builder: B) -> Result<()> {
-        builder.add_to_task(self.raw_handle())?;
+        unsafe { builder.add_to_task(self.raw_handle())? };
         self.channel_count += 1;
         Ok(())
     }

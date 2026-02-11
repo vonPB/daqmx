@@ -219,7 +219,7 @@ impl VoltageChannel {
 }
 
 impl ChannelBuilderInput for VoltageChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateAIVoltageChan(
             task,
@@ -235,7 +235,7 @@ impl ChannelBuilderInput for VoltageChannel {
 }
 
 impl ChannelBuilderOutput for VoltageChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateAOVoltageChan(
             task,

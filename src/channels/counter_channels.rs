@@ -78,7 +78,7 @@ impl CounterOutputPulseTimeChannel {
 }
 
 impl ChannelBuilderOutput for CounterOutputPulseTimeChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         if self.low_time <= 0.0 {
             bail!("low_time must be > 0.0 seconds");
         }
@@ -135,7 +135,7 @@ impl CounterOutputPulseFreqChannel {
 }
 
 impl ChannelBuilderOutput for CounterOutputPulseFreqChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         if self.frequency <= 0.0 {
             bail!("frequency must be > 0.0 Hz");
         }
@@ -188,7 +188,7 @@ impl CounterInputCountEdgesChannel {
 }
 
 impl ChannelBuilderInput for CounterInputCountEdgesChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateCICountEdgesChan(
             task,

@@ -77,9 +77,17 @@ trait Channel {
 }
 
 pub trait ChannelBuilderInput {
-    fn add_to_task(self, task: TaskHandle) -> Result<()>;
+    /// Add this channel configuration to an existing DAQmx task handle.
+    ///
+    /// # Safety
+    /// Caller must provide a valid, live DAQmx task handle created by NI-DAQmx.
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()>;
 }
 
 pub trait ChannelBuilderOutput {
-    fn add_to_task(self, task: TaskHandle) -> Result<()>;
+    /// Add this channel configuration to an existing DAQmx task handle.
+    ///
+    /// # Safety
+    /// Caller must provide a valid, live DAQmx task handle created by NI-DAQmx.
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()>;
 }
