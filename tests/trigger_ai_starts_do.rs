@@ -16,7 +16,7 @@ fn test_ai_start_trigger_releases_do() -> Result<()> {
     let dev = "PCIe-6363_test";
 
     // AI task (start trigger source)
-    let ai1 = VoltageChannel::builder("AI1", &format!("{dev}/ai1"))?
+    let ai1 = VoltageChannel::builder("AI1", format!("{dev}/ai1"))?
         .max(1.0)
         .terminal_config(AnalogTerminalConfig::RSE)
         .build()?;
@@ -32,7 +32,7 @@ fn test_ai_start_trigger_releases_do() -> Result<()> {
     )?;
 
     // DO task (triggered)
-    let do1 = DigitalChannel::builder("DO1", &format!("{dev}/port0/line1"))?.build()?;
+    let do1 = DigitalChannel::builder("DO1", format!("{dev}/port0/line1"))?.build()?;
     let mut do_task: Task<DigitalOutput> = Task::new("DO slave")?;
     do_task.create_channel(do1)?;
     do_task.configure_sample_clock_timing(

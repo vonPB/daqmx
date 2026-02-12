@@ -98,7 +98,8 @@ fn pfi_master_trigger_starts_ai_di_do() -> Result<()> {
             .build()?;
     co_task.create_channel(co_ch)?;
     co_task.configure_implicit_timing(SampleMode::FiniteSamples, 1)?;
-    co_task.export_counter_output_event_to(&format!("/{dev}/PFI0"))?;
+    // Export to C0 terminal for external instruments
+    co_task.set_counter_output_terminal(&format!("/{dev}/PFI0"))?;
 
     // Arm AI/DI/DO first so they wait on the trigger edge.
     ai_task.start()?;

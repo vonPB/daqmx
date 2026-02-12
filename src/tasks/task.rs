@@ -127,14 +127,17 @@ impl<TYPE> Task<TYPE> {
         mode: types::SampleMode,
         samples_per_channel: u64,
     ) -> Result<()> {
-        let source_c = match source {
-            Some(name) => CString::new(name)?,
-            None => CString::new("OnboardClock")?,
+        let source_c;
+        let source_c_ptr = if let Some(name) = source {
+            source_c = CString::new(name)?;
+            source_c.as_ptr()
+        } else {
+            ptr::null()
         };
 
         daqmx_call!(daqmx::DAQmxCfgSampClkTiming(
             self.raw_handle(),
-            source_c.as_ptr(),
+            source_c_ptr,
             rate,
             edge.into(),
             mode.into(),

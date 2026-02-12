@@ -55,6 +55,10 @@ impl Task<CounterOutput> {
         high_s: f64,
         idle_state: IdleState,
     ) -> Result<()> {
+        if self.channel_count != 0 {
+            bail!("counter task already has channels; create a new Task<CounterOutput> for another pulse config");
+        }
+
         if low_s <= 0.0 {
             bail!("low_s must be > 0.0 seconds");
         }
