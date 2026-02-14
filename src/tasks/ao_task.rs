@@ -12,7 +12,7 @@ impl Task<AnalogOutput> {
         &mut self,
         builder: B,
     ) -> Result<()> {
-        <B as ChannelBuilderOutput>::add_to_task(builder, self.raw_handle())?;
+        unsafe { <B as ChannelBuilderOutput>::add_to_task(builder, self.raw_handle())? };
         self.channel_count += 1;
         Ok(())
     }

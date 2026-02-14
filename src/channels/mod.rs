@@ -1,7 +1,9 @@
 mod analog_channels;
+mod counter_channels;
 mod digital_channels;
 
 pub use analog_channels::*;
+pub use counter_channels::*;
 pub use digital_channels::*;
 
 use crate::daqmx::TaskHandle;
@@ -75,9 +77,17 @@ trait Channel {
 }
 
 pub trait ChannelBuilderInput {
-    fn add_to_task(self, task: TaskHandle) -> Result<()>;
+    /// Add this channel configuration to an existing DAQmx task handle.
+    ///
+    /// # Safety
+    /// Caller must provide a valid, live DAQmx task handle created by NI-DAQmx.
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()>;
 }
 
 pub trait ChannelBuilderOutput {
-    fn add_to_task(self, task: TaskHandle) -> Result<()>;
+    /// Add this channel configuration to an existing DAQmx task handle.
+    ///
+    /// # Safety
+    /// Caller must provide a valid, live DAQmx task handle created by NI-DAQmx.
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()>;
 }

@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::channels::DigitalChannel;
 use daqmx::tasks::output::{OutputTask, WriteOptions};
@@ -8,6 +9,9 @@ use serial_test::serial;
 #[test]
 #[serial]
 fn test_do_buffered_write_autostart_false_then_start() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     const SAMPLES: u32 = 10;
 
     let do1 = DigitalChannel::builder("DO1", "PCIe-6363_test/port0/line1")?.build()?;

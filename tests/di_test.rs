@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::channels::*;
 use daqmx::tasks::DigitalInput;
@@ -12,6 +13,9 @@ use serial_test::serial;
 #[test]
 #[serial]
 fn test_digital_input_builder_scalar_types() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
     let mut task: Task<DigitalInput> = Task::new("")?;
@@ -27,6 +31,9 @@ fn test_digital_input_builder_scalar_types() -> Result<()> {
 #[test]
 #[serial]
 fn test_digital_input_builder() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
     let ch2 = DigitalChannel::builder(
@@ -65,6 +72,9 @@ fn test_digital_input_builder() -> Result<()> {
 #[test]
 #[serial]
 fn test_digital_input_builder_bool() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let ch1 = DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
 
     let ch2 = DigitalChannel::builder(

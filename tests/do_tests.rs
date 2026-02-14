@@ -1,3 +1,4 @@
+mod common;
 use anyhow::Result;
 use daqmx::channels::DigitalChannel;
 use daqmx::channels::DigitalChannelBase;
@@ -13,6 +14,9 @@ use serial_test::serial;
 #[test]
 #[serial]
 fn test_digital_output_builder() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     for _ in 0..100 {
         let ch1 =
             DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;
@@ -60,6 +64,9 @@ fn test_digital_output_builder() -> Result<()> {
 #[test]
 #[serial]
 fn test_digital_output_builder_bool() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     for _ in 0..100 {
         let ch1 =
             DigitalChannel::builder("my_digital_input", "PCIe-6363_test/port0/line0")?.build()?;

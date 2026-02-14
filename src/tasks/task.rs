@@ -5,7 +5,7 @@ use crate::{daqmx, daqmx_call, types};
 use std::{ffi::CString, marker::PhantomData, ptr, sync::Arc};
 
 use crate::error::handle_error;
-use crate::types::{buffer_to_string, Timeout};
+use crate::types::{buffer_to_string, ExportSignal, Timeout};
 use anyhow::Result;
 use daqmx::bool32;
 
@@ -35,6 +35,14 @@ pub struct DigitalInput;
 #[derive(Clone)]
 ///Marker type for an digital output task.
 pub struct DigitalOutput;
+
+#[derive(Clone)]
+/// Marker type for a counter input task.
+pub struct CounterInput;
+
+#[derive(Clone)]
+/// Marker type for a counter output task.
+pub struct CounterOutput;
 
 #[derive(Clone)]
 pub struct Task<TYPE> {
@@ -119,14 +127,17 @@ impl<TYPE> Task<TYPE> {
         mode: types::SampleMode,
         samples_per_channel: u64,
     ) -> Result<()> {
-        let source_c = match source {
-            Some(name) => CString::new(name)?,
-            None => CString::new("OnboardClock")?,
+        let source_c;
+        let source_c_ptr = if let Some(name) = source {
+            source_c = CString::new(name)?;
+            source_c.as_ptr()
+        } else {
+            ptr::null()
         };
 
         daqmx_call!(daqmx::DAQmxCfgSampClkTiming(
             self.raw_handle(),
-            source_c.as_ptr(),
+            source_c_ptr,
             rate,
             edge.into(),
             mode.into(),
@@ -186,13 +197,49 @@ impl<TYPE> Task<TYPE> {
         Ok(())
     }
 
-    /// Configures the trigger source for the task.
+    /// Configures a digital edge start trigger source for the task.
+    ///
+    /// Common trigger source strings include:
+    /// - `"/DevX/PFI0"`
+    /// - `"/DevX/ai/StartTrigger"`
+    /// - `"/DevX/Ctr0InternalOutput"`
     pub fn configure_trigger(&mut self, source: &str, edge: types::ClockEdge) -> Result<()> {
         let source_c = CString::new(source)?;
         daqmx_call!(daqmx::DAQmxCfgDigEdgeStartTrig(
             self.raw_handle(),
             source_c.as_ptr(),
             edge.into()
+        ))
+    }
+
+    /// Disable the task's configured start trigger.
+    pub fn disable_start_trigger(&mut self) -> Result<()> {
+        daqmx_call!(daqmx::DAQmxDisableStartTrig(self.raw_handle()))
+    }
+
+    /// Configure a digital edge reference trigger.
+    pub fn configure_reference_trigger(
+        &mut self,
+        source: &str,
+        edge: types::ClockEdge,
+        pretrigger_samples: u32,
+    ) -> Result<()> {
+        let source_c = CString::new(source)?;
+        daqmx_call!(daqmx::DAQmxCfgDigEdgeRefTrig(
+            self.raw_handle(),
+            source_c.as_ptr(),
+            edge.into(),
+            pretrigger_samples
+        ))
+    }
+
+    /// Export an internal signal to a terminal (PFI/RTSI).
+    pub fn export_signal(&mut self, signal: ExportSignal, terminal: &str) -> Result<()> {
+        let terminal_c = CString::new(terminal)?;
+        daqmx_call!(daqmx::DAQmxExportSignal(
+            self.raw_handle(),
+            signal.into(),
+            terminal_c.as_ptr()
         ))
     }
 }

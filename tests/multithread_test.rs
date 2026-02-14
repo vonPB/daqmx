@@ -1,5 +1,7 @@
 //! Integration tests to confirm multithreaded behaviour.
 //!
+mod common;
+
 use anyhow::Result;
 use daqmx::channels::*;
 use daqmx::tasks::*;
@@ -9,6 +11,9 @@ use serial_test::serial;
 #[serial]
 #[test]
 fn test_move_to_thread() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;
@@ -46,6 +51,9 @@ fn test_move_to_thread() -> Result<()> {
 /// This test will move the read to another thread but set stop from this thread.
 /// This is a fairly commmon case for multithreading a task.
 fn test_control_from_thread() -> Result<()> {
+    if common::test_device_or_skip()?.is_none() {
+        return Ok(());
+    }
     let mut task: Task<AnalogInput> = Task::new("scalar")?;
     let ch1 = VoltageChannel::builder("my name", "PCIe-6363_test/ai0")?.build()?;
     task.create_channel(ch1)?;

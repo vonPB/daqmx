@@ -63,21 +63,21 @@ impl DigitalChannel {
     /// If you specify one or more entire ports in lines by using port physical channel names,
     /// you cannot separate the ports into multiple channels.
     /// To separate ports into multiple channels, use this function multiple times with a different port each time.
-    pub fn builder<S: Into<Vec<u8>>>(
-        name: S,
-        physical_channel: S,
+    pub fn builder<N: AsRef<str>, P: AsRef<str>>(
+        name: N,
+        physical_channel: P,
     ) -> Result<DigitalChannelBuilder> {
-        let physical_channel = CString::new(physical_channel)?;
+        let physical_channel = CString::new(physical_channel.as_ref())?;
         let mut builder = DigitalChannelBuilder::default();
         builder.physical_channel(physical_channel);
-        builder.name(CString::new(name.into())?);
+        builder.name(CString::new(name.as_ref())?);
         Ok(builder)
     }
 }
 
 /// Digital Input impl
 impl ChannelBuilderInput for DigitalChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateDIChan(
             task,
@@ -90,7 +90,7 @@ impl ChannelBuilderInput for DigitalChannel {
 
 /// Digital Output impl
 impl ChannelBuilderOutput for DigitalChannel {
-    fn add_to_task(self, task: TaskHandle) -> Result<()> {
+    unsafe fn add_to_task(self, task: TaskHandle) -> Result<()> {
         let empty_string = CString::default();
         daqmx_call!(daqmx::DAQmxCreateDOChan(
             task,

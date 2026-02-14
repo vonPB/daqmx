@@ -11,6 +11,8 @@ The following tasks are implemented:
 * Analog Output
 * Digital Input
 * Digital Output
+* Counter Input
+* Counter Output
 
 each can be created and configured, and then read and written to.
 
@@ -54,6 +56,53 @@ fn main() -> Result<()> {
 ```
 
 See the [tests](tests) directory for more examples.
+
+## Deterministic Start Trigger
+
+Use a one-shot hardware counter pulse to trigger multiple tasks deterministically.
+
+```rust
+use anyhow::Result;
+use daqmx::channels::{DigitalChannel, VoltageChannel};
+use daqmx::tasks::output::{OutputTask, WriteOptions};
+use daqmx::tasks::{CounterOutputTask, AnalogInput, CounterOutput, DigitalOutput, Task};
+use daqmx::types::{ClockEdge, DataFillMode, IdleState, SampleMode, Timeout};
+
+fn deterministic_trigger(dev: &str) -> Result<()> {
+    let trigger = format!("/{dev}/PFI0");
+
+    let mut ai: Task<AnalogInput> = Task::new("ai")?;
+    ai.create_channel(VoltageChannel::builder("ai0", format!("{dev}/ai0"))?.build()?)?;
+    ai.configure_sample_clock_timing(None, 10_000.0, ClockEdge::Rising, SampleMode::FiniteSamples, 100)?;
+    ai.configure_trigger(&trigger, ClockEdge::Rising)?;
+
+    let mut do_task: Task<DigitalOutput> = Task::new("do")?;
+    do_task.create_channel(DigitalChannel::builder("do0", format!("{dev}/port0/line0"))?.build()?)?;
+    do_task.configure_sample_clock_timing(None, 10_000.0, ClockEdge::Rising, SampleMode::FiniteSamples, 100)?;
+    do_task.configure_trigger(&trigger, ClockEdge::Rising)?;
+    do_task.write_with_options(
+        Timeout::Seconds(2.0),
+        DataFillMode::GroupByChannel,
+        Some(100),
+        &vec![1u8; 100],
+        WriteOptions::default().auto_start(false),
+    )?;
+
+    let mut co: Task<CounterOutput> = Task::new("co")?;
+    co.configure_one_shot_pulse_time(&format!("{dev}/ctr0"), 5e-6, 50e-6, IdleState::Low)?;
+    co.export_counter_output_event_to(&trigger)?;
+
+    ai.start()?;
+    do_task.start()?;
+    co.start_pulse()?;
+    Ok(())
+}
+```
+
+Typical trigger source strings:
+- `/DevX/PFI0`
+- `/DevX/ai/StartTrigger`
+- `/DevX/ai/SampleClock`
 
 ## Credits
 

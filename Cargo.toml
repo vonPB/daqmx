@@ -1,12 +1,12 @@
 [package]
 name = "daqmx"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = "0.9"
+rand = "0.10"
 lazy_static = "1.4.0"
 log = "^0.4"
 log4rs = { version = "1.2.0" }
@@ -19,22 +19,14 @@ num-derive = "0.4"
 num-traits = "0.2"
 derive_builder = "0.20"
 
+serde  = { version = "1.0", optional = true, features = ["derive"] }
+specta = { version = "2.0.0-rc.22", optional = true, features = ["derive"] }
+
 [build-dependencies]
-bindgen = "0.71"
+bindgen = "0.72"
 
 [features]
 default = []
-serde_support = ["serde"]
-specta_support = ["specta"]
+serde_support = ["dep:serde"]
+specta_support = ["dep:specta"]
 
-[dependencies.serde]
-version = "1.0"
-optional = true
-
-[dependencies.serde_derive]
-version = "1.0"
-optional = true
-
-[dependencies.specta]
-version = "2.0.0-rc"
-optional = true

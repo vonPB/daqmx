@@ -66,6 +66,7 @@ impl From<Timeout> for f64 {
 ///Represents the active edge of clock or trigger
 ///
 /// Default is rising.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ClockEdge {
     Rising,
     Falling,
@@ -82,6 +83,106 @@ impl From<ClockEdge> for i32 {
         match edge {
             ClockEdge::Rising => daqmx::DAQmx_Val_Rising,
             ClockEdge::Falling => daqmx::DAQmx_Val_Falling,
+        }
+    }
+}
+
+/// Idle state for counter output pulses.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum IdleState {
+    #[default]
+    Low,
+    High,
+}
+
+impl From<IdleState> for i32 {
+    fn from(idle: IdleState) -> Self {
+        match idle {
+            IdleState::Low => daqmx::DAQmx_Val_Low,
+            IdleState::High => daqmx::DAQmx_Val_High,
+        }
+    }
+}
+
+/// Time units used by pulse-time counter channels.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum TimeUnits {
+    #[default]
+    Seconds,
+}
+
+impl From<TimeUnits> for i32 {
+    fn from(units: TimeUnits) -> Self {
+        match units {
+            TimeUnits::Seconds => daqmx::DAQmx_Val_Seconds,
+        }
+    }
+}
+
+/// Frequency units used by pulse-frequency counter channels.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum FrequencyUnits {
+    #[default]
+    Hertz,
+}
+
+impl From<FrequencyUnits> for i32 {
+    fn from(units: FrequencyUnits) -> Self {
+        match units {
+            FrequencyUnits::Hertz => daqmx::DAQmx_Val_Hz,
+        }
+    }
+}
+
+/// Count direction for edge-counting counter input channels.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum CountDirection {
+    #[default]
+    CountUp,
+    CountDown,
+    ExternalControl,
+}
+
+impl From<CountDirection> for i32 {
+    fn from(direction: CountDirection) -> Self {
+        match direction {
+            CountDirection::CountUp => daqmx::DAQmx_Val_CountUp,
+            CountDirection::CountDown => daqmx::DAQmx_Val_CountDown,
+            CountDirection::ExternalControl => daqmx::DAQmx_Val_ExtControlled,
+        }
+    }
+}
+
+/// Signals that can be exported from a task onto a terminal.
+///
+/// Typical terminals:
+/// - `"/DevX/PFI0"`
+/// - `"/DevX/RTSI0"`
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ExportSignal {
+    /// Generic sample clock export (works with task sample clock).
+    SampleClock,
+    /// Generic start trigger export.
+    StartTrigger,
+    /// Generic reference trigger export.
+    ReferenceTrigger,
+    /// Generic arm-start trigger export.
+    ArmStartTrigger,
+    /// AI convert clock export.
+    AiConvertClock,
+    /// Generic counter output event export.
+    CounterOutputEvent,
+}
+
+impl From<ExportSignal> for i32 {
+    fn from(signal: ExportSignal) -> Self {
+        match signal {
+            ExportSignal::SampleClock => daqmx::DAQmx_Val_SampleClock,
+            ExportSignal::StartTrigger => daqmx::DAQmx_Val_StartTrigger,
+            ExportSignal::ReferenceTrigger => daqmx::DAQmx_Val_ReferenceTrigger,
+            ExportSignal::ArmStartTrigger => daqmx::DAQmx_Val_ArmStartTrigger,
+            ExportSignal::AiConvertClock => daqmx::DAQmx_Val_AIConvertClock,
+            ExportSignal::CounterOutputEvent => daqmx::DAQmx_Val_CounterOutputEvent,
         }
     }
 }
